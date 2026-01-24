@@ -2,7 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { useContext } from "react";
 
 function App() {
-  const apiKey = 'YOUR_API_KEY_HERE'; // Substitua pela sua chave de API
+  const apiKey = 'e2ed1ed66e9b42428ef67bb381b726b4';
 
   const [exchanges, setExchanges] = useState(null);
   const [currencies, setCurrencies] = useState(null);
@@ -21,7 +21,7 @@ function App() {
   const useMainContext = useContext(MainContext);
 
   function converterMoeda() {
-    if (!exchanges) return; // TODO: tratar erro
+    if (!exchanges) return;
 
     const cotacaoDeMoeda = exchanges[deMoeda];
     const cotacaoParaMoeda = exchanges[paraMoeda];
@@ -55,76 +55,121 @@ function App() {
   useEffect(() => {
     if (!useMainContext.exchanges) {
       const fetchExchangeRates = async () => {
-        const response = await fetch(`https://api.currencyfreaks.com/v2.0/rates/latest?apikey=${apiKey}`);
+        const response = await fetch(
+          `https://api.currencyfreaks.com/v2.0/rates/latest?apikey=${apiKey}`
+        );
 
-      const data = await response.json();
+        const data = await response.json();
 
-      useMainContext.setExchanges(data.rates);
+        useMainContext.setExchanges(data.rates);
 
-      const currenciesArray = Object.keys(data.rates);
-      currenciesArray.sort((currencyA, currencyB) => {
-        return currencyA.localeCompare(currencyB);
-      });
+        const currenciesArray = Object.keys(data.rates);
+        currenciesArray.sort((a, b) => a.localeCompare(b));
 
-      useMainContext.setCurrencies(currenciesArray);
-    };
+        useMainContext.setCurrencies(currenciesArray);
+      };
 
       fetchExchangeRates();
     }
   }, []);
 
   return (
-    <>
-      <div className="w-full flex flex-col items-center h-screen justify-center">
-        <h1 className="text-center pt-8">Conversor de Moedas</h1>
-        <div className="flex gap-4 items-center pt-4">
-          <label htmlFor="inputDeValor" className="block text-left font-semibold">De:</label>
+    <div className="w-screen h-screen flex items-center justify-center 
+      bg-gradient-to-br from-blue-600 to-indigo-800
+      dark:from-gray-900 dark:to-gray-800">
+
+      <div className="w-full max-w-xl rounded-2xl shadow-2xl p-8
+        bg-white text-gray-800
+        dark:bg-gray-900 dark:text-gray-100">
+
+        <h1 className="text-3xl font-bold text-center mb-8
+          text-indigo-700 dark:text-indigo-400">
+          💱 Conversor de Moedas
+        </h1>
+
+        {/* DE */}
+        <div className="flex items-center gap-4 mb-6">
+          <label className="font-semibold w-14 text-gray-700 dark:text-gray-300">
+            De:
+          </label>
+
           <input
             type="text"
-            id="inputDeValor"
-            // placeholder=""
-            className="border border-gray-300 p-2 rounded-md w-80"
             onChange={handleInputDeValor}
+            className="flex-1 px-4 py-2 rounded-lg border
+              bg-white text-gray-800 border-gray-300
+              focus:outline-none focus:ring-2 focus:ring-indigo-500
+              dark:bg-gray-800 dark:text-white dark:border-gray-600"
           />
+
           <select
-            className={`border border-gray-300 p-2 rounded-md w-fit`}
             disabled={!exchanges}
             onChange={handleInputDeMoeda}
             value={deMoeda}
+            className="px-3 py-2 rounded-lg border
+              bg-gray-50 text-gray-800 border-gray-300
+              focus:outline-none focus:ring-2 focus:ring-indigo-500
+              dark:bg-gray-800 dark:text-white dark:border-gray-600"
           >
-            {useMainContext.currencies ? useMainContext.currencies.map((moeda) => (
-              <option key={moeda} value={moeda}>{moeda}</option>
-            )) : <option>Carregando...</option>}
+            {useMainContext.currencies ? (
+              useMainContext.currencies.map((moeda) => (
+                <option key={moeda} value={moeda}>
+                  {moeda}
+                </option>
+              ))
+            ) : (
+              <option>Carregando...</option>
+            )}
           </select>
         </div>
-        <div className="pt-4 flex gap-4 items-center">
-          <label htmlFor="inputParaValor" className="block text-left font-semibold">Para:</label>
+
+        {/* PARA */}
+        <div className="flex items-center gap-4 mb-8">
+          <label className="font-semibold w-14 text-gray-700 dark:text-gray-300">
+            Para:
+          </label>
+
           <input
             type="text"
-            id="inputParaValor"
             disabled={exchanges}
-            // placeholder=""
-            className="border border-gray-300 p-2 rounded-md w-80"
             value={paraValor}
+            className="flex-1 px-4 py-2 rounded-lg border
+              bg-gray-100 text-gray-700 border-gray-300 cursor-not-allowed
+              dark:bg-gray-700 dark:text-white dark:border-gray-600"
           />
+
           <select
-            className={`border border-gray-300 p-2 rounded-md w-fit`}
             disabled={!exchanges}
             onChange={handleInputParaMoeda}
             value={paraMoeda}
+            className="px-3 py-2 rounded-lg border
+              bg-gray-50 text-gray-800 border-gray-300
+              focus:outline-none focus:ring-2 focus:ring-indigo-500
+              dark:bg-gray-800 dark:text-white dark:border-gray-600"
           >
-            {useMainContext.currencies ? useMainContext.currencies.map((moeda) => (
-              <option key={moeda} value={moeda}>{moeda}</option>
-            )) : <option>Carregando...</option>}
+            {useMainContext.currencies ? (
+              useMainContext.currencies.map((moeda) => (
+                <option key={moeda} value={moeda}>
+                  {moeda}
+                </option>
+              ))
+            ) : (
+              <option>Carregando...</option>
+            )}
           </select>
         </div>
+
         <button
-          className="mt-6 bg-blue-500 text-white px-4 py-2 rounded-md"
           onClick={handleConvert}
-        >Converter</button>
+          className="w-full py-3 rounded-xl font-semibold transition shadow-md
+            bg-indigo-600 hover:bg-indigo-700 text-white
+            dark:bg-indigo-500 dark:hover:bg-indigo-600"
+        >
+          Converter
+        </button>
       </div>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
