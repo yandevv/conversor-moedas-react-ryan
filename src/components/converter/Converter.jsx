@@ -1,9 +1,9 @@
 import { useContext, createContext, useEffect, useState } from "react";
-
 import ConverterCurrencySelect from "./ConverterCurrencySelect";
+import ConverterTable from "./ConverterTable";
 
 function Converter() {
-  const apiKey = 'your_api_key_here';
+  const apiKey = 'e2ed1ed66e9b42428ef67bb381b726b4';
 
   const [exchanges, setExchanges] = useState(null);
   const [currencies, setCurrencies] = useState(null);
@@ -19,6 +19,7 @@ function Converter() {
     currencies,
     setCurrencies,
   });
+
   const useMainContext = useContext(MainContext);
 
   function converterMoeda() {
@@ -54,12 +55,12 @@ function Converter() {
 
         const data = await response.json();
 
-        useMainContext.setExchanges(data.rates);
+        setExchanges(data.rates);
 
         const currenciesArray = Object.keys(data.rates);
         currenciesArray.sort((a, b) => a.localeCompare(b));
 
-        useMainContext.setCurrencies(currenciesArray);
+        setCurrencies(currenciesArray);
       };
 
       fetchExchangeRates();
@@ -67,14 +68,16 @@ function Converter() {
   }, []);
 
   return (
-    <div
-      className="w-screen h-screen flex items-center justify-center bg-linear-to-br from-blue-600 to-indigo-800 dark:from-gray-900 dark:to-gray-800"
+    <div className="min-h-screen w-full flex flex-col items-center
+      bg-linear-to-br from-blue-600 to-indigo-800
+      dark:from-gray-900 dark:to-gray-800
+      px-4 py-10"
     >
-
+      {/* CONVERSOR */}
       <div className="w-full max-w-xl rounded-2xl shadow-2xl p-8
         bg-white text-gray-800
-        dark:bg-gray-900 dark:text-gray-100">
-
+        dark:bg-gray-900 dark:text-gray-100"
+      >
         <h1 className="text-3xl font-bold text-center mb-8
           text-indigo-700 dark:text-indigo-400">
           💱 Conversor de Moedas
@@ -99,7 +102,7 @@ function Converter() {
             isDisabled={!exchanges}
             currency={deMoeda}
             currencySetter={setDeMoeda}
-            currencies={useMainContext.currencies}
+            currencies={currencies}
           />
         </div>
 
@@ -122,7 +125,7 @@ function Converter() {
             isDisabled={!exchanges}
             currency={paraMoeda}
             currencySetter={setParaMoeda}
-            currencies={useMainContext.currencies}
+            currencies={currencies}
           />
         </div>
 
@@ -135,8 +138,14 @@ function Converter() {
           Converter
         </button>
       </div>
+
+      {/* TABELA */}
+      <ConverterTable
+        currencies={currencies}
+        exchanges={exchanges}
+      />
     </div>
-  )
+  );
 }
 
-export default Converter
+export default Converter;
